@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alta de cliente | ABN Group</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f6fa; --card:#ffffff; --ink:#14162b; --muted:#5d6177; --line:#dfe2ec;
+    --brand:#1f2a6b; --brand-2:#3b4cca; --accent:#e9ecff; --err:#c62828; --ok:#1b7f4b;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  header{background:var(--brand);color:#fff}
+  .top{max-width:760px;margin:0 auto;padding:18px 16px;display:flex;align-items:center;gap:10px}
+  .logo{font-weight:700;font-size:20px;letter-spacing:.5px}
+  .logo span{font-weight:400;opacity:.8;margin-left:4px}
+  main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+  h1{font-size:28px;margin:0 0 6px}
+  .lead{color:var(--muted);margin:0 0 24px}
+  .progress{display:flex;gap:6px;margin-bottom:8px}
+  .progress i{flex:1;height:6px;border-radius:6px;background:var(--line)}
+  .progress i.on{background:var(--brand-2)}
+  .step-label{font-size:14px;color:var(--muted);margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .card h2{font-size:20px;margin:0 0 4px}
+  .card .desc{color:var(--muted);font-size:14px;margin:0 0 18px}
+  .field{margin-bottom:18px}
+  .field[hidden]{display:none}
+  .q{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+  .req{color:var(--err);margin-left:2px}
+  .help{font-size:13px;color:var(--muted);margin:-2px 0 6px}
+  input[type=text],input[type=email],input[type=tel],input[type=date],input[type=url],select,textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff;color:inherit}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--brand-2);outline-offset:1px;border-color:transparent}
+  .opts{display:grid;gap:8px}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+  .opt input{margin-top:4px}
+  .opt:has(input:checked){border-color:var(--brand-2);background:var(--accent)}
+  .sub{font-weight:700;font-size:15px;margin:24px 0 12px;padding-top:16px;border-top:1px solid var(--line)}
+  .note{background:var(--accent);border-radius:10px;padding:12px 14px;font-size:14px;margin-bottom:18px}
+  input[type=file]{width:100%;padding:10px;border:1px dashed var(--line);border-radius:10px;background:#fafbff}
+  .invalid input,.invalid select,.invalid textarea,.invalid .opt{border-color:var(--err)}
+  .errmsg{color:var(--err);font-size:13px;margin-top:4px}
+  .nav{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+  button{font:inherit;font-weight:600;border-radius:10px;padding:12px 22px;cursor:pointer;border:1px solid var(--brand);min-height:44px}
+  .btn-prim{background:var(--brand);color:#fff}
+  .btn-sec{background:#fff;color:var(--brand)}
+  button:disabled{opacity:.6;cursor:wait}
+  .done{text-align:center;padding:40px 24px}
+  .done .check{width:56px;height:56px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:28px;margin:0 auto 12px}
+  .hp{position:absolute;left:-9999px}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:24px}
+  @media (max-width:520px){ h1{font-size:24px} .card{padding:18px} button{padding:12px 16px} }
+</style>
+</head>
+<body>
+<header><div class="top"><div class="logo">ABN<span>Group</span></div></div></header>
+
+<main>
+  <h1>Alta de cliente</h1>
+  <p class="lead">Para darte de alta y poder facturarte necesitamos algunos datos. Lleva unos 5 minutos. Tené a mano el documento de registro fiscal de tu empresa.</p>
+
+  <div id="formWrap">
+    <div class="progress" id="progress"></div>
+    <div class="step-label" id="stepLabel"></div>
+    <form id="form" class="card" novalidate>
+      <div id="stepBody"></div>
+      <input class="hp" type="text" name="website_hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="nav">
+        <button type="button" class="btn-sec" id="prev">Atrás</button>
+        <button type="button" class="btn-prim" id="next">Siguiente</button>
+      </div>
+      <div class="errmsg" id="sendErr" role="alert"></div>
+    </form>
+  </div>
+
+  <div id="done" class="card done" hidden>
+    <div class="check">✓</div>
+    <h2>¡Gracias! Recibimos tus datos.</h2>
+    <p class="desc">Nuestro equipo de administración los va a revisar y se va a contactar si falta algo.</p>
+  </div>
+
+  <footer>Tus datos se usan solo para gestionar tu alta y facturación, conforme a la Ley 25.326 (Argentina) y la normativa aplicable en tu país.</footer>
+</main>
+
+<script>
+/* =========================================================
+   CONFIGURACIÓN — pegá acá la URL de la aplicación web de Apps Script (termina en /exec)
+   ========================================================= */
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyO190hr5j-5onDDMHKXyo3v4nLrIJc6F-o4KfTkyAbYI_8XATvO2n6saASyhXqukH-/exec';
+const MAX_MB_POR_ARCHIVO = 5;
+const MAX_MB_TOTAL = 20;
+const MAIL_DOCUMENTACION = 'finanzas@abndigital.com.ar';
+const SERVICIOS = ['Pauta en Meta Ads', 'Pauta en Google Ads', 'Gestión de redes sociales', 'Estrategia / consultoría digital'];
+
+/* ---------- Listas ---------- */
+const PAISES = ['Argentina','Bolivia','Brasil','Canadá','Chile','Colombia','Costa Rica','Ecuador','El Salvador','Estados Unidos',
+  'Guatemala','Honduras','México','Nicaragua','Panamá','Paraguay','Perú','Puerto Rico','República Dominicana','Uruguay','Venezuela','Otro país'];
+const PROVINCIAS = ['CABA','Buenos Aires','Catamarca','Chaco','Chubut','Córdoba','Corrientes','Entre Ríos','Formosa','Jujuy','La Pampa',
+  'La Rioja','Mendoza','Misiones','Neuquén','Río Negro','Salta','San Juan','San Luis','Santa Cruz','Santa Fe','Santiago del Estero','Tierra del Fuego','Tucumán'];
+const TIPOS_ID = ['RFC (México)','RUT (Chile / Uruguay)','NIT (Colombia / Bolivia / Guatemala / otros)','RUC (Perú / Ecuador / Paraguay / Panamá)',
+  'CNPJ (Brasil)','EIN (Estados Unidos)','Business Number (Canadá)','Otro'];
+
+const AR  = v => v.pais === 'Argentina';
+const EXT = v => !!v.pais && v.pais !== 'Argentina';
+
+/* ---------- Estructura del formulario ----------
+   tipos: text, email, tel, date, url, textarea, select, radio, checks, file, note, sub
+   show: función que decide si se muestra según las respuestas */
+const STEPS = [
+  { title: 'Datos de la empresa', fields: [
+    { k:'pais', label:'País de la empresa', type:'select', opts:PAISES, req:true, help:'País donde está registrada la empresa a la que vamos a facturar.' },
+    { k:'razon_social', label:'Razón social / Nombre legal', type:'text', req:true, help:'Tal como figura en su registro fiscal.' },
+    { k:'nombre_fantasia', label:'Nombre de fantasía / Marca', type:'text' },
+    { k:'tipo_persona', label:'Tipo de persona', type:'radio', opts:['Empresa / Persona jurídica','Persona física / Profesional independiente'], req:true },
+    { k:'rubro', label:'Rubro o actividad principal', type:'text', req:true },
+    { k:'inicio_actividades', label:'Fecha de inicio de actividades', type:'date' },
+    { k:'web', label:'Sitio web', type:'text', placeholder:'www.empresa.com' },
+    { k:'redes', label:'Redes sociales', type:'textarea', help:'Links o usuarios (Instagram, LinkedIn, TikTok, etc.).' },
+    { k:'idioma', label:'Idioma preferido para comunicaciones', type:'select', opts:['Español','English','Português'], req:true },
+  ]},
+  { title: 'Datos fiscales y domicilio', fields: [
+    // Argentina
+    { k:'cuit', label:'CUIT', type:'text', req:true, show:AR, pattern:'^\\d{2}-?\\d{8}-?\\d$', placeholder:'30-12345678-9', patternMsg:'Formato: 30-12345678-9 u 11 dígitos.' },
+    { k:'iva', label:'Condición frente al IVA', type:'select', opts:['Responsable Inscripto','Monotributo','Exento','Consumidor Final'], req:true, show:AR },
+    { k:'tipo_factura', label:'Tipo de factura', type:'radio', opts:['A','B','No estoy seguro'], req:true, show:AR,
+      help:'Responsable Inscripto recibe factura A. Monotributo, Exento y Consumidor Final reciben factura B.' },
+    { k:'iibb_condicion', label:'Condición de Ingresos Brutos', type:'select', opts:['Convenio Multilateral','Local','Exento'], req:true, show:AR },
+    { k:'iibb_numero', label:'Número de Ingresos Brutos', type:'text', show:AR },
+    { type:'sub', label:'Domicilio fiscal', show:AR },
+    { k:'ar_calle', label:'Calle y número', type:'text', req:true, show:AR },
+    { k:'ar_piso', label:'Piso / Depto', type:'text', show:AR },
+    { k:'ar_localidad', label:'Localidad', type:'text', req:true, show:AR },
+    { k:'ar_provincia', label:'Provincia', type:'select', opts:PROVINCIAS, req:true, show:AR },
+    { k:'ar_cp', label:'Código postal', type:'text', req:true, show:AR },
+    { type:'sub', label:'Datos bancarios (opcional)', show:AR },
+    { k:'cbu', label:'CBU o CVU', type:'text', show:AR, help:'Solo si necesitamos hacerles débitos o reintegros.' },
+    { k:'alias', label:'Alias', type:'text', show:AR },
+    // Exterior
+    { type:'note', label:'A empresas fuera de Argentina les emitimos factura de exportación (tipo E), normalmente en dólares.', show:EXT },
+    { k:'ext_tipo_id', label:'Tipo de identificación fiscal', type:'select', opts:TIPOS_ID, req:true, show:EXT },
+    { k:'ext_id', label:'Número de identificación fiscal', type:'text', req:true, show:EXT, help:'Ej.: RFC, RUT, NIT, RUC, CNPJ, EIN.' },
+    { k:'ext_regimen', label:'Régimen o condición fiscal (si aplica)', type:'text', show:EXT,
+      help:'Ej.: régimen fiscal SAT (México), responsabilidad tributaria (Colombia), Simples Nacional (Brasil).' },
+    { k:'ext_iva', label:'¿La empresa está registrada para IVA / impuesto al consumo (VAT, GST, ICMS)?', type:'radio', opts:['Sí','No','No sé'], show:EXT },
+    { type:'sub', label:'Domicilio fiscal', show:EXT },
+    { k:'ext_direccion', label:'Dirección (calle, número, oficina)', type:'text', req:true, show:EXT },
+    { k:'ext_ciudad', label:'Ciudad', type:'text', req:true, show:EXT },
+    { k:'ext_estado', label:'Estado / Provincia / Región / Departamento', type:'text', req:true, show:EXT },
+    { k:'ext_cp', label:'Código postal / ZIP', type:'text', show:EXT },
+  ]},
+  { title: 'Contactos', fields: [
+    { k:'dom_comercial', label:'Domicilio comercial o de entrega (solo si es distinto del fiscal)', type:'textarea' },
+    { type:'sub', label:'Contacto principal / comercial' },
+    { k:'cp_nombre', label:'Nombre y apellido', type:'text', req:true },
+    { k:'cp_cargo', label:'Cargo', type:'text', req:true },
+    { k:'cp_email', label:'Email', type:'email', req:true },
+    { k:'cp_tel', label:'Teléfono / WhatsApp', type:'tel', req:true, placeholder:'+54 9 11 1234 5678', help:'Con código de país.' },
+    { type:'sub', label:'Contacto administrativo / pagos' },
+    { k:'pg_nombre', label:'Nombre y apellido', type:'text', req:true },
+    { k:'pg_email', label:'Email', type:'email', req:true },
+    { k:'pg_tel', label:'Teléfono', type:'tel', placeholder:'+52 55 1234 5678', help:'Con código de país.' },
+    { k:'email_facturas', label:'Email para recibir facturas', type:'email', multiple:true, req:true, help:'Si son varios, separalos con coma.' },
+  ]},
+  { title: 'Facturación y pagos', fields: [
+    { k:'moneda', label:'Moneda de facturación', type:'select', opts:['Dólares (USD)','Pesos argentinos (ARS)'], req:true, help:'Clientes del exterior: normalmente USD.' },
+    { k:'forma_pago', label:'Forma de pago preferida', type:'select', req:true, opts:['Transferencia bancaria local (Argentina)','Cheque / e-cheq (Argentina)',
+      'Transferencia internacional (wire / SWIFT)','ACH (Estados Unidos)','Wise','Tarjeta de crédito','Otra'] },
+    { k:'condicion_pago', label:'Condición de pago', type:'select', opts:['Contado / anticipado','15 días','30 días','45 días','60 días','Otra'], req:true },
+    { k:'dias_pago', label:'Días de pago y cierre de recepción de facturas', type:'text', help:'Ej.: "pagamos los viernes" o "recibimos facturas hasta el día 20".' },
+    { k:'requiere_oc', label:'¿La facturación requiere orden de compra (OC / PO)?', type:'radio', opts:['Sí','No'], req:true },
+    { k:'oc_email', label:'¿A quién le pedimos la orden de compra? (email)', type:'email', req:true, show:v => v.requiere_oc === 'Sí' },
+    { k:'portal_proveedores', label:'¿Usan un portal de proveedores? ¿Cuál?', type:'text', help:'Ariba, Coupa, SAP, etc. Si tenemos que darnos de alta como proveedor, indicá cuál.' },
+    { k:'aplica_retenciones', label:'¿Aplican retenciones de impuestos sobre los pagos a ABN?', type:'radio', opts:['Sí','No','No sé'], req:true,
+      help:'Argentina: si son agentes de retención. Exterior: si retienen impuestos sobre pagos al exterior (withholding tax).' },
+    { k:'retenciones', label:'¿Qué retenciones aplican?', type:'checks', req:true, show:v => v.aplica_retenciones === 'Sí',
+      opts:['IVA (Argentina)','Ganancias (Argentina)','Ingresos Brutos (Argentina)','SUSS (Argentina)','Retención sobre pagos al exterior / withholding tax','Otra'] },
+    { k:'retencion_pct', label:'Porcentaje de retención (si lo saben)', type:'text', show:v => v.aplica_retenciones === 'Sí' },
+    { k:'retencion_email', label:'Email al que envían los certificados de retención', type:'email', show:v => v.aplica_retenciones === 'Sí' },
+  ]},
+  { title: 'Documentación', desc: 'PDF, JPG o PNG. Hasta ' + MAX_MB_POR_ARCHIVO + ' MB por archivo. Si no podés subirlos ahora, envialos a ' + MAIL_DOCUMENTACION + ' indicando la razón social.', fields: [
+    { k:'doc_fiscal', label:'Constancia de inscripción en ARCA', type:'file', show:AR },
+    { k:'doc_fiscal', label:'Documento de registro fiscal de tu país', type:'file', show:EXT,
+      help:'Ej.: Constancia de Situación Fiscal (SAT), RUT (DIAN), Cartão CNPJ, carta de EIN (IRS).' },
+    { k:'doc_iibb', label:'Constancia de IIBB o CM01', type:'file', show:AR },
+    { k:'doc_exclusion', label:'Certificados de exclusión o no retención (si tienen)', type:'file' },
+    { k:'doc_estatuto', label:'Estatuto o poder del firmante', type:'file', help:'Solo si van a firmar contrato.' },
+    { k:'docs_abn', label:'¿Necesitan algún documento de ABN para darnos de alta como proveedor?', type:'checks',
+      opts:['Formulario W-8BEN-E (Estados Unidos)','Certificado de residencia fiscal','Formulario de alta de proveedor propio','Datos bancarios de ABN','Ninguno'] },
+  ]},
+  { title: 'Servicio', fields: [
+    { k:'servicios', label:'Servicios contratados', type:'checks', opts:SERVICIOS.concat(['Otro']), req:true },
+    { k:'mercados', label:'Países o mercados donde se va a ejecutar la campaña', type:'text' },
+    { k:'fecha_inicio', label:'Fecha estimada de inicio', type:'date' },
+    { k:'como_conocieron', label:'¿Cómo nos conocieron?', type:'select', opts:['Recomendación','Redes sociales','Búsqueda en Google','Evento','Ya trabajamos juntos','Otro'] },
+  ]},
+  { title: 'Confirmación', fields: [
+    { k:'completa_nombre', label:'Nombre y apellido de quien completa', type:'text', req:true },
+    { k:'completa_cargo', label:'Cargo de quien completa', type:'text', req:true },
+    { k:'acepta', label:'Términos y datos personales', type:'checks', req:true,
+      opts:['Acepto los términos y condiciones de ABN y el tratamiento de mis datos personales conforme a la Ley 25.326 (Argentina) y la normativa aplicable en mi país.'] },
+  ]},
+];
+
+/* ---------- Motor del formulario ---------- */
+const form = document.getElementById('form');
+const body = document.getElementById('stepBody');
+const prevBtn = document.getElementById('prev');
+const nextBtn = document.getElementById('next');
+const sendErr = document.getElementById('sendErr');
+let step = 0;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Renderiza todos los pasos una vez (así no se pierden datos al ir y volver)
+const stepEls = STEPS.map((s, i) => {
+  const wrap = document.createElement('section');
+  wrap.dataset.step = i;
+  wrap.innerHTML = '<h2>' + esc(s.title) + '</h2>' + (s.desc ? '<p class="desc">' + esc(s.desc) + '</p>' : '<p class="desc"></p>') +
+    s.fields.map((f, j) => renderField(f, i + '_' + j)).join('');
+  body.appendChild(wrap);
+  return wrap;
+});
+
+function renderField(f, id) {
+  const showAttr = ' data-fid="' + id + '"';
+  if (f.type === 'sub')  return '<div class="sub field"' + showAttr + '>' + esc(f.label) + '</div>';
+  if (f.type === 'note') return '<div class="note field"' + showAttr + '>' + esc(f.label) + '</div>';
+  const req = f.req ? '<span class="req">*</span>' : '';
+  const help = f.help ? '<p class="help">' + esc(f.help) + '</p>' : '';
+  const name = f.k, inputId = 'i_' + id;
+  let ctrl = '';
+  const common = ' name="' + name + '" id="' + inputId + '"' + (f.req ? ' required' : '');
+  switch (f.type) {
+    case 'textarea': ctrl = '<textarea' + common + '></textarea>'; break;
+    case 'select':
+      ctrl = '<select' + common + '><option value="">Elegí una opción…</option>' +
+        f.opts.map(o => '<option>' + esc(o) + '</option>').join('') + '</select>'; break;
+    case 'radio': case 'checks': {
+      const t = f.type === 'radio' ? 'radio' : 'checkbox';
+      ctrl = '<div class="opts" role="group">' + f.opts.map(o =>
+        '<label class="opt"><input type="' + t + '" name="' + name + '" value="' + esc(o) + '"> <span>' + esc(o) + '</span></label>').join('') + '</div>';
+      break;
+    }
+    case 'file':
+      ctrl = '<input type="file"' + common + ' multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*">'; break;
+    default:
+      ctrl = '<input type="' + f.type + '"' + common +
+        (f.pattern ? ' pattern="' + esc(f.pattern) + '"' : '') +
+        (f.multiple ? ' multiple' : '') +
+        (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') + '>';
+  }
+  const grupo = f.type === 'radio' || f.type === 'checks';
+  const lbl = grupo ? '<span class="q">' + esc(f.label) + req + '</span>'
+                    : '<label class="q" for="' + inputId + '">' + esc(f.label) + req + '</label>';
+  return '<div class="field"' + showAttr + '>' + lbl + help + ctrl + '<div class="errmsg"></div></div>';
+}
+
+const fieldDefs = {};
+STEPS.forEach((s, i) => s.fields.forEach((f, j) => fieldDefs[i + '_' + j] = f));
+
+function values() {
+  const v = {};
+  form.querySelectorAll('input,select,textarea').forEach(el => {
+    if (!el.name || el.disabled || el.type === 'file') return;
+    if (el.type === 'checkbox') { (v[el.name] = v[el.name] || []); if (el.checked) v[el.name].push(el.value); }
+    else if (el.type === 'radio') { if (el.checked) v[el.name] = el.value; }
+    else v[el.name] = el.value.trim();
+  });
+  return v;
+}
+
+function applyVisibility() {
+  const v = values();
+  document.querySelectorAll('[data-fid]').forEach(div => {
+    const f = fieldDefs[div.dataset.fid];
+    const visible = !f.show || f.show(v);
+    div.hidden = !visible;
+    div.querySelectorAll('input,select,textarea').forEach(el => el.disabled = !visible);
+  });
+}
+
+function validateStep(i) {
+  let firstBad = null;
+  stepEls[i].querySelectorAll('.field').forEach(div => {
+    if (div.hidden || !div.dataset.fid) return;
+    const f = fieldDefs[div.dataset.fid];
+    const err = div.querySelector('.errmsg');
+    let msg = '';
+    if (f.type === 'radio' || f.type === 'checks') {
+      if (f.req && !div.querySelector('input:checked')) msg = 'Elegí al menos una opción.';
+    } else if (f.type === 'file') {
+      const files = [...div.querySelector('input').files];
+      if (files.some(x => x.size > MAX_MB_POR_ARCHIVO * 1048576)) msg = 'Cada archivo puede pesar hasta ' + MAX_MB_POR_ARCHIVO + ' MB.';
+    } else {
+      const el = div.querySelector('input,select,textarea');
+      if (el && el.value) el.value = el.value.trim();
+      if (el && !el.checkValidity()) {
+        if (el.validity.valueMissing) msg = 'Este dato es obligatorio.';
+        else if (el.validity.patternMismatch && f.patternMsg) msg = f.patternMsg;
+        else if (el.validity.typeMismatch && el.type === 'email') msg = 'Revisá el formato del email.';
+        else msg = el.validationMessage;
+      }
+    }
+    if (err) err.textContent = msg;
+    div.classList.toggle('invalid', !!msg);
+    if (msg && !firstBad) firstBad = div;
+  });
+  if (firstBad) { firstBad.scrollIntoView({ behavior:'smooth', block:'center' }); const el = firstBad.querySelector('input,select,textarea'); if (el) el.focus({ preventScroll:true }); }
+  return !firstBad;
+}
+
+function show(i) {
+  step = i;
+  stepEls.forEach((el, j) => el.hidden = j !== i);
+  document.getElementById('progress').innerHTML = STEPS.map((_, j) => '<i class="' + (j <= i ? 'on' : '') + '"></i>').join('');
+  document.getElementById('stepLabel').textContent = 'Paso ' + (i + 1) + ' de ' + STEPS.length + ' · ' + STEPS[i].title;
+  prevBtn.style.visibility = i === 0 ? 'hidden' : 'visible';
+  nextBtn.textContent = i === STEPS.length - 1 ? 'Enviar' : 'Siguiente';
+  sendErr.textContent = '';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function fileToB64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result).split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function submit() {
+  const files = [];
+  let total = 0;
+  for (const inp of form.querySelectorAll('input[type=file]:not(:disabled)')) {
+    for (const file of inp.files) {
+      total += file.size;
+      files.push({ campo: inp.name, nombre: file.name, tipo: file.type, base64: await fileToB64(file) });
+    }
+  }
+  if (total > MAX_MB_TOTAL * 1048576) { sendErr.textContent = 'Los adjuntos superan ' + MAX_MB_TOTAL + ' MB en total. Enviá algunos por mail a ' + MAIL_DOCUMENTACION + '.'; return; }
+  const fields = values();
+  fields.website_hp = form.website_hp.value;
+
+  nextBtn.disabled = prevBtn.disabled = true;
+  nextBtn.textContent = 'Enviando…';
+  try {
+    const r = await fetch(WEB_APP_URL, { method:'POST', body: JSON.stringify({ fields, files }) }); // text/plain: evita preflight CORS
+    const out = await r.json();
+    if (!out.ok) throw new Error(out.error || 'Error desconocido');
+    document.getElementById('formWrap').hidden = true;
+    document.getElementById('done').hidden = false;
+    window.scrollTo({ top:0 });
+  } catch (e) {
+    console.error(e);
+    sendErr.textContent = 'No pudimos enviar el formulario. Probá de nuevo en unos minutos o escribinos a ' + MAIL_DOCUMENTACION + '.';
+    nextBtn.disabled = prevBtn.disabled = false;
+    nextBtn.textContent = 'Enviar';
+  }
+}
+
+form.addEventListener('input', applyVisibility);
+form.addEventListener('change', applyVisibility);
+form.addEventListener('submit', e => e.preventDefault());
+prevBtn.addEventListener('click', () => show(step - 1));
+nextBtn.addEventListener('click', () => {
+  if (!validateStep(step)) return;
+  if (step < STEPS.length - 1) show(step + 1); else submit();
+});
+
+applyVisibility();
+show(0);
+</script>
+</body>
+</html>
